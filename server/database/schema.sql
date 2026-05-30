@@ -36,7 +36,7 @@ CREATE TABLE games (
     user_id INTEGER NOT NULL,
     start_station_id INTEGER NOT NULL,
     end_station_id INTEGER NOT NULL,
-    final_score INTEGER,
+    final_score INTEGER NOT NULL DEFAULT 0,
     played_at TEXT NOT NULL,
 
     FOREIGN KEY (user_id) REFERENCES users(id),
