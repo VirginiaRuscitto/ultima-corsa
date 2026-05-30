@@ -1,6 +1,6 @@
 [![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/iZes9Qfg)
 # Exam #N: "Exam Title"
-## Student: s123456 LASTNAME FIRSTNAME 
+## Student: s353342 RUSCITTO VIRGINIA
 
 ## React Client Application Routes
 
@@ -23,9 +23,12 @@
 
 ## Database Tables
 
-- Table `users` - contains xx yy zz
-- Table `something` - contains ww qq ss
-- ...
+- Table `users` - (id (PK), username (UNIQUE), name, surname, salt, password)
+- Table `stations` - (id (PK), name (UNIQUE))
+- Table `lines` - (id (PK), name (UNIQUE))
+- Table `connections` - (id (PK), line_id (FK -> lines.id), station_a_id (FK -> stations.id), station_b_id (FK -> stations.id))
+- Table `events` - (id (PK), description, effect)
+- Table `games` - (id (PK), user_id (FK -> users.id), start_station_id (FK -> stations.id), end_station_id (FK -> stations.id), final_score, played_at)
 
 ## Main React Components
 
