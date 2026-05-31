@@ -1,5 +1,5 @@
 import db from "../database/db.mjs";
-import { User } from './models.mjs';
+import { User } from '../models.mjs';
 import crypto from 'crypto';
 
 export default function UsersDAO() {

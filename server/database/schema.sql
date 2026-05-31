@@ -36,15 +36,14 @@ CREATE TABLE games (
     user_id INTEGER NOT NULL,
     start_station_id INTEGER NOT NULL,
     end_station_id INTEGER NOT NULL,
-    final_score INTEGER NOT NULL DEFAULT 0,
+    final_score INTEGER,
     played_at TEXT NOT NULL,
 
     FOREIGN KEY (user_id) REFERENCES users(id),
     FOREIGN KEY (start_station_id) REFERENCES stations(id),
     FOREIGN KEY (end_station_id) REFERENCES stations(id),
 
-    CHECK (start_station_id <> end_station_id),
-    CHECK (final_score >= 0)
+    CHECK (start_station_id <> end_station_id)
 );
 
 CREATE TABLE connections (

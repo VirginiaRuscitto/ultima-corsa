@@ -1,8 +1,7 @@
 import db from "../database/db.mjs";
-import { Station, Line, Connection } from './models.mjs';
+import { Station, Line, Connection } from '../models.mjs';
 
 export default function NetworkDAO() {
-
     this.getAllStations = () => {
         return new Promise((resolve, reject) => {
             db.all('SELECT id, name FROM stations', [], (err, rows) => {
