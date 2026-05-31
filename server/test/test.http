@@ -1,0 +1,455 @@
+### =====================================================================
+### ULTIMA CORSA — REST Client Test Suite
+### Requires: VSCode "REST Client" extension (humao.rest-client)
+### Server:   http://localhost:3001
+### =====================================================================
+### Credenziali seed:
+###   mrossi   / password: da determinare (vedi hash nel seed)
+###   gbianchi / password: da determinare
+###   lverdi   / password: da determinare
+###
+### Per i test usa le password in chiaro che hai scelto al momento
+### del seeding. Modifica la variabile @pass se necessario.
+### =====================================================================
+
+@base = http://localhost:3001
+@contentType = application/json
+
+# Credenziali utenti (adatta alle password in chiaro del tuo seed)
+@user1 = mrossi
+@pass1 = marco01
+@user2 = gbianchi
+@pass2 = giulia01
+@user3 = lverdi
+@pass3 = luca01
+
+# ID gioco (aggiorna dopo POST /api/games)
+@gameId = 1
+
+
+### =====================================================================
+### 1. SESSIONS
+### =====================================================================
+
+### 1.1 Login corretto — utente 1
+# @name loginMrossi
+POST {{base}}/api/sessions
+Content-Type: {{contentType}}
+
+{
+  "username": "{{user1}}",
+  "password": "{{pass1}}"
+}
+
+###
+
+### 1.2 Login corretto — utente 2
+# @name loginGbianchi
+POST {{base}}/api/sessions
+Content-Type: {{contentType}}
+
+{
+  "username": "{{user2}}",
+  "password": "{{pass2}}"
+}
+
+###
+
+### 1.3 Login corretto — utente 3
+# @name loginLverdi
+POST {{base}}/api/sessions
+Content-Type: {{contentType}}
+
+{
+  "username": "{{user3}}",
+  "password": "{{pass3}}"
+}
+
+###
+
+### 1.4 Login — password sbagliata → 401
+POST {{base}}/api/sessions
+Content-Type: {{contentType}}
+
+{
+  "username": "mrossi",
+  "password": "wrongpassword"
+}
+
+###
+
+### 1.5 Login — username inesistente → 401
+POST {{base}}/api/sessions
+Content-Type: {{contentType}}
+
+{
+  "username": "nonexistent",
+  "password": "password123"
+}
+
+###
+
+### 1.6 Login — body vuoto → 401 / 400
+POST {{base}}/api/sessions
+Content-Type: {{contentType}}
+
+{}
+
+###
+
+### 1.7 Login — campo mancante (solo username) → 401 / 400
+POST {{base}}/api/sessions
+Content-Type: {{contentType}}
+
+{
+  "username": "mrossi"
+}
+
+###
+
+### 1.8 GET sessione corrente — NON autenticato → 401
+GET {{base}}/api/sessions/current
+
+###
+
+### 1.9 GET sessione corrente — autenticato
+# (esegui dopo 1.1; il cookie è gestito automaticamente da REST Client)
+GET {{base}}/api/sessions/current
+
+###
+
+### 1.10 Logout — utente loggato → 200/204
+DELETE {{base}}/api/sessions/current
+
+###
+
+### 1.11 Logout — NON autenticato → 401
+# (esegui dopo 1.10 senza rifare login)
+DELETE {{base}}/api/sessions/current
+
+###
+
+
+### =====================================================================
+### 2. NETWORK
+### =====================================================================
+### Nota: prima di questi test fai login (1.1) e NON fare logout
+
+### 2.1 GET network — autenticato → 200 con { lines, stations, connections }
+GET {{base}}/api/network
+
+###
+
+### 2.2 GET network — NON autenticato → 401
+# (prima esegui logout 1.10, poi questo)
+GET {{base}}/api/network
+
+###
+
+
+### =====================================================================
+### 3. LEADERBOARD
+### =====================================================================
+
+### 3.1 GET leaderboard — autenticato → 200, array ordinato per best_score DESC
+GET {{base}}/api/leaderboard
+
+###
+
+### 3.2 GET leaderboard — NON autenticato → 401
+# (esegui dopo logout)
+GET {{base}}/api/leaderboard
+
+###
+
+
+### =====================================================================
+### 4. GAMES — Creazione
+### =====================================================================
+### Prerequisito: essere loggati (1.1)
+
+### 4.1 POST /api/games — crea partita → 201 con { gameId, startStation, endStation }
+# @name createGame
+POST {{base}}/api/games
+Content-Type: {{contentType}}
+
+###
+
+### 4.2 POST /api/games — NON autenticato → 401
+# (esegui dopo logout)
+POST {{base}}/api/games
+Content-Type: {{contentType}}
+
+###
+
+### 4.3 Verifica che startStation ≠ endStation (logica server)
+# → basta ispezionare la risposta di 4.1;
+# se gameId è presente e startStation.id != endStation.id il test passa
+POST {{base}}/api/games
+Content-Type: {{contentType}}
+
+###
+
+
+### =====================================================================
+### 5. GAMES — Invio percorso (route)
+### =====================================================================
+### Aggiorna @gameId con il valore ricevuto da 4.1
+### Per i connectionIds usa gli id reali del tuo seed
+### (recuperali da GET /api/network → connections)
+
+### --- PERCORSO VALIDO ---
+### Esempio: Roma→Capua (Linea I, connId 1) poi Capua→Benevento (Linea I, connId 2) poi Benevento→Brindisi (connId 3)
+### Verifica che startStation = Roma (id 1) ed endStation = Brindisi (id 4)
+### Se il tuo gameId ha stazioni diverse, adatta connectionIds di conseguenza
+
+### 5.1 Route valida → 200, valid:true, segments non vuoto, finalScore >= 0
+POST {{base}}/api/games/{{gameId}}/route
+Content-Type: {{contentType}}
+
+{
+  "connectionIds": [1, 2, 3]
+}
+
+###
+
+### --- IDEMPOTENCY ---
+### 5.2 Stessa partita inviata una seconda volta → 409 (già finalizzata)
+POST {{base}}/api/games/{{gameId}}/route
+Content-Type: {{contentType}}
+
+{
+  "connectionIds": [1, 2, 3]
+}
+
+###
+
+### --- PERCORSO NON VALIDO ---
+### 5.3 connectionIds non forma un percorso lineare (tratte non consecutive) → valid:false, finalScore:0
+# Crea prima una nuova partita (4.1) e aggiorna @gameId
+POST {{base}}/api/games/{{gameId}}/route
+Content-Type: {{contentType}}
+
+{
+  "connectionIds": [1, 5]
+}
+
+###
+
+### 5.4 connectionIds con tratte di linee incompatibili (cambio illegale)
+# Questo testa validateRoute: percorso che attraversa stazioni non di interscambio
+# Usa connessioni che saltano stazioni intermedie
+POST {{base}}/api/games/{{gameId}}/route
+Content-Type: {{contentType}}
+
+{
+  "connectionIds": [1, 4]
+}
+
+###
+
+### 5.5 connectionIds non inizia dalla stazione di partenza → valid:false
+POST {{base}}/api/games/{{gameId}}/route
+Content-Type: {{contentType}}
+
+{
+  "connectionIds": [2, 3]
+}
+
+###
+
+### 5.6 connectionIds non termina alla stazione di arrivo → valid:false
+POST {{base}}/api/games/{{gameId}}/route
+Content-Type: {{contentType}}
+
+{
+  "connectionIds": [1, 2]
+}
+
+###
+
+### 5.7 connectionIds vuoto → 400 (validation error)
+POST {{base}}/api/games/{{gameId}}/route
+Content-Type: {{contentType}}
+
+{
+  "connectionIds": []
+}
+
+###
+
+### 5.8 connectionIds mancante nel body → 400
+POST {{base}}/api/games/{{gameId}}/route
+Content-Type: {{contentType}}
+
+{}
+
+###
+
+### 5.9 connectionIds con valore non intero → 400
+POST {{base}}/api/games/{{gameId}}/route
+Content-Type: {{contentType}}
+
+{
+  "connectionIds": ["abc", 2]
+}
+
+###
+
+### 5.10 connectionIds con id inesistente nel DB → valid:false (connMap.get ritorna undefined)
+POST {{base}}/api/games/{{gameId}}/route
+Content-Type: {{contentType}}
+
+{
+  "connectionIds": [9999]
+}
+
+###
+
+### 5.11 connectionIds con id negativo → 400 (validation: min: 1)
+POST {{base}}/api/games/{{gameId}}/route
+Content-Type: {{contentType}}
+
+{
+  "connectionIds": [-1]
+}
+
+###
+
+### 5.12 connectionIds con id zero → 400 (validation: min: 1)
+POST {{base}}/api/games/{{gameId}}/route
+Content-Type: {{contentType}}
+
+{
+  "connectionIds": [0]
+}
+
+###
+
+### --- OWNERSHIP ---
+### 5.13 Partita di un altro utente → 404
+# Crea una partita con mrossi (4.1), annota gameId, poi loggati come gbianchi (1.2)
+# e prova a inviare il percorso per quella partita
+POST {{base}}/api/games/{{gameId}}/route
+Content-Type: {{contentType}}
+
+{
+  "connectionIds": [1, 2, 3]
+}
+
+###
+
+### --- GAME ID INVALIDO ---
+### 5.14 gameId non numerico → 400 (param validation)
+POST {{base}}/api/games/abc/route
+Content-Type: {{contentType}}
+
+{
+  "connectionIds": [1, 2, 3]
+}
+
+###
+
+### 5.15 gameId inesistente → 404
+POST {{base}}/api/games/999999/route
+Content-Type: {{contentType}}
+
+{
+  "connectionIds": [1, 2, 3]
+}
+
+###
+
+### 5.16 gameId negativo → 400
+POST {{base}}/api/games/-1/route
+Content-Type: {{contentType}}
+
+{
+  "connectionIds": [1, 2, 3]
+}
+
+###
+
+### 5.17 Route NON autenticato → 401
+# (esegui dopo logout)
+POST {{base}}/api/games/{{gameId}}/route
+Content-Type: {{contentType}}
+
+{
+  "connectionIds": [1, 2, 3]
+}
+
+###
+
+### --- SCORE FLOOR ---
+### 5.18 Verifica che finalScore non sia mai < 0
+# (difficile da testare in modo deterministico con eventi casuali,
+#  ma puoi mandare una route lunga e controllare la risposta)
+# Crea una nuova partita con distanza minima e verifica finalScore >= 0 nella risposta
+POST {{base}}/api/games/{{gameId}}/route
+Content-Type: {{contentType}}
+
+{
+  "connectionIds": [1, 2, 3, 4, 5, 6]
+}
+
+###
+
+
+### =====================================================================
+### 6. EDGE CASES GENERALI
+### =====================================================================
+
+### 6.1 Endpoint inesistente → 404 (Express default)
+GET {{base}}/api/nonexistent
+
+###
+
+### 6.2 Metodo HTTP sbagliato su endpoint esistente
+PUT {{base}}/api/sessions
+
+###
+
+### 6.3 Content-Type errato su POST sessions → 400 / gestito da Express
+POST {{base}}/api/sessions
+Content-Type: text/plain
+
+username=mrossi&password=password123
+
+###
+
+### 6.4 Body malformato (JSON non valido) → 400 (SyntaxError da express.json)
+POST {{base}}/api/sessions
+Content-Type: {{contentType}}
+
+{ username: mrossi, password: }
+
+###
+
+
+### =====================================================================
+### CHECKLIST MANUALE DOPO I TEST
+### =====================================================================
+###
+### ✅ 1.1  → 201, body { id, username, name, surname } (NO salt/password)
+### ✅ 1.4  → 401
+### ✅ 1.8  → 401
+### ✅ 1.9  → 200, dati utente
+### ✅ 1.10 → 200 o 204
+### ✅ 2.1  → 200, { lines:[...], stations:[...], connections:[...] }
+### ✅ 2.2  → 401
+### ✅ 3.1  → 200, array [ { id, username, best_score }, ... ] ordinato DESC
+### ✅ 4.1  → 201, { gameId, startStation:{id,name}, endStation:{id,name} }
+###           startStation.id ≠ endStation.id
+### ✅ 5.1  → 200, { valid:true, segments:[...], finalScore: >= 0 }
+### ✅ 5.2  → 409
+### ✅ 5.3  → 200, { valid:false, segments:[], finalScore:0 }
+### ✅ 5.7  → 400
+### ✅ 5.8  → 400
+### ✅ 5.9  → 400
+### ✅ 5.13 → 404
+### ✅ 5.14 → 400
+### ✅ 5.15 → 404
+### ✅ 5.18 → finalScore >= 0 sempre
+###
+### =====================================================================
