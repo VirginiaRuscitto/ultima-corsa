@@ -35,12 +35,16 @@ app.use(cors(corsOptions));
 let cachedGraph=null;
 let cachedConnections=null;
 let cachedValidPairs=null;
+let cachedStations = null;
+let cachedLines = null;
 
 async function initNetwork() {
   try{
-    const [stations, connections]=await Promise.all([networkDAO.getAllStations(), networkDAO.getAllConnections()]);
+    const [stations, connections, lines]=await Promise.all([networkDAO.getAllStations(), networkDAO.getAllConnections(), networkDAO.getAllLines()]);
 
     cachedConnections=connections;
+    cachedLines = lines;
+    cachedStations = stations;
     cachedGraph=graph.buildGraph(connections);
 
     const stationMap = new Map(stations.map(s => [s.id, s])); //per evitare il find O(n) dopo petr trovare l'id
@@ -58,6 +62,9 @@ async function initNetwork() {
     console.log(`Network loaded`);
   } catch (err) {
     console.error("initNetwork failed:", err);
+    cachedStations = [];
+    cachedLines = [];
+    cachedConnections = [];
     cachedValidPairs = [];
   }
 }
@@ -75,7 +82,7 @@ passport.use(
   })
 );
 
-passport.serializeUser((user, cb) => cb(null, user));
+passport.serializeUser((user, cb) => cb(null, user)); //TODO nel caso mando solo l'id  
 
 passport.deserializeUser((user, cb) => cb(null, user));
 
@@ -111,11 +118,7 @@ app.get('/api/sessions/current', (req, res) => {
 //network
 app.get('/api/network', isLoggedIn, async (req, res) => {
   try {
-    const [stations, lines] = await Promise.all([
-      networkDAO.getAllStations(),
-      networkDAO.getAllLines(),
-    ]);
-    res.json({ lines, stations, connections: cachedConnections }); //TODO servono davvero tutte per il frontend? rivedere una volta che faccio il frontend
+    res.json({ stations: cachedStations, lines: cachedLines, connections: cachedConnections }); //TODO servono davvero tutte per il frontend? rivedere una volta che faccio il frontend
   } catch {
     res.status(500).json({ error: 'Cannot load network' });
   }
@@ -146,7 +149,7 @@ app.post('/api/games', isLoggedIn, async (req, res) => {
 });
 
 app.post(
-  '/api/games/:id/route',
+  '/api/games/:id/route', //TODO in caso la splitto in validate e in resolve
   isLoggedIn,
   [
     param('id').isInt({ min: 1 }).withMessage('Game id must be a positive integer'),
