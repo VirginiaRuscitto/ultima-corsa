@@ -1,8 +1,8 @@
 function InstructionsPage() {
   return (
-    <div className="instructions-container">
+    <>
 
-        <h1>Come si gioca</h1>
+        <h1 className="mb-3">Come si gioca</h1>
 
         <p>
             <strong>Ultima Corsa</strong> è un gioco in cui devi attraversare una città
@@ -112,7 +112,7 @@ function InstructionsPage() {
             Scegli bene… e buona fortuna!
         </p>
 
-    </div>
+    </>
   );
 }
 
