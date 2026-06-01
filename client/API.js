@@ -1,4 +1,4 @@
-import { Station, Line, Connection, Game, User } from "./models.js";
+import { Station, Line, Connection, Game, User } from "./models.mjs";
 
 const SERVER_URL = "http://localhost:3001";
 
@@ -32,7 +32,7 @@ const getSession = async () => {
     return new User(data.id, data.username, data.name, data.surname);
 };
 
-const logIn = async (credentials) => {
+const login = async (credentials) => {
     const response = await fetch(`${SERVER_URL}/api/sessions`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -45,7 +45,7 @@ const logIn = async (credentials) => {
     return new User(user.id, user.username, user.name, user.surname);
 };
 
-const logOut = async () => {
+const logout = async () => {
     const response = await fetch(`${SERVER_URL}/api/sessions/current`, {
         method: "DELETE",
         credentials: "include",
@@ -116,5 +116,5 @@ const getLeaderboard = async () => {
     return await handleResponse(response);
 };
 
-const API = {getSession, logIn, logOut, getNetwork, createGame, submitRoute, getLeaderboard};
+const API = {getSession, login, logout, getNetwork, createGame, submitRoute, getLeaderboard};
 export default API;
