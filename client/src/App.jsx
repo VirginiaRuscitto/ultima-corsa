@@ -7,8 +7,9 @@ import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
 import InstructionsPage from "./pages/InstructionsPage";
 
-{/*
+
 import LeaderboardPage from "./pages/LeaderboardPage";
+{/*
 import GamePage from "./pages/GamePage";
 import NotFoundPage from "./pages/NotFoundPage";
 */}
@@ -17,7 +18,7 @@ import API from "../API.js";
 function ProtectedRoute({ loggedIn, children }) {
   const location = useLocation();
   if (!loggedIn) {
-    return <Navigate to="/login" replace state={{ from: location.pathname }} />; //TODO fare che manda un mess di errore
+    return <Navigate to="/login" replace state={{ from: location.pathname }} />;
   }
   return children;
 }
@@ -54,8 +55,10 @@ function App() {
         <Route path="/login" element={loggedIn ? <Navigate replace to="/" /> : <LoginPage handleLogin={handleLogin} />} />
         
         <Route path="/instructions" element={<InstructionsPage />} />
-        {/*
+        
         <Route path="/leaderboard" element={<ProtectedRoute loggedIn={loggedIn}><LeaderboardPage /></ProtectedRoute>} />
+
+      {/*
 
         <Route path="/game/:id" element={<ProtectedRoute loggedIn={loggedIn}><GamePage user={user} /></ProtectedRoute>} />
         
