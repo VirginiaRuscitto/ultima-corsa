@@ -1,6 +1,6 @@
 import { Navbar, Nav, Container, Button, Row, Col } from "react-bootstrap";
 import { NavLink, useNavigate } from "react-router";
-import AuthButton from "./Buttons";
+import { AuthButton } from "./Buttons";
 import "../styles/App.css";
 
 function AppNavbar({ loggedIn, user, handleLogout }) {
@@ -19,7 +19,7 @@ function AppNavbar({ loggedIn, user, handleLogout }) {
             <Nav className="gap-3">
               <Nav.Link as={NavLink} to="/" end>Home</Nav.Link>
               <Nav.Link as={NavLink} to="/instructions">Istruzioni</Nav.Link>
-              <Nav.Link as={NavLink} to="/leaderboard">Classifica</Nav.Link>
+              {loggedIn && (<Nav.Link as={NavLink} to="/leaderboard">Classifica</Nav.Link>)}
             </Nav>
           </Col>
 
