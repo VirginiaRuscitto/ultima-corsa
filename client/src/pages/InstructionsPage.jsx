@@ -1,8 +1,30 @@
-function InstructionsPage() {
+import { useNavigate } from "react-router";
+import API from "../../API.js";
+import { ActionButton } from "../components/Buttons";
+
+function InstructionsPage({ loggedIn }) {
+
+  const navigate = useNavigate();
+  const handlePlay = async () => {
+    try {
+      const game = await API.createGame();
+      navigate(`/game/${game.id}`);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   return (
-    <>
+    <div className="px-1">
 
         <h1 className="mb-3">Come si gioca</h1>
+        {loggedIn && (
+            <div className="text-center mt-4 mb-4">
+            <ActionButton onClick={handlePlay} className="action-btn-xl">
+                Gioca
+            </ActionButton>
+            </div>
+        )}
 
         <p>
             <strong>Ultima Corsa</strong> è un gioco in cui devi attraversare una città
@@ -112,7 +134,15 @@ function InstructionsPage() {
             Scegli bene… e buona fortuna!
         </p>
 
-    </>
+        {loggedIn && (
+            <div className="text-center mt-4 mb-4">
+            <ActionButton onClick={handlePlay} className="action-btn-xxl">
+                Gioca
+            </ActionButton>
+            </div>
+        )}
+
+    </div>
   );
 }
 

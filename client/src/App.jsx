@@ -9,10 +9,8 @@ import InstructionsPage from "./pages/InstructionsPage";
 
 
 import LeaderboardPage from "./pages/LeaderboardPage";
-{/*
 import GamePage from "./pages/GamePage";
 import NotFoundPage from "./pages/NotFoundPage";
-*/}
 import API from "../API.js";
 
 function ProtectedRoute({ loggedIn, children }) {
@@ -30,7 +28,7 @@ function App() {
 
   const navigate = useNavigate();
 
-  useEffect(() => {
+  useEffect(() => { //TODO spinner temporaneo mentre apetto che si carichi la sessione
     API.getSession()
       .then(u => { setLoggedIn(true); setUser(u); })
       .catch(() => {});
@@ -50,20 +48,19 @@ function App() {
       <Route element={<DefaultLayout loggedIn={loggedIn} user={user} message={message} setMessage={setMessage} 
         handleLogout={handleLogout}/>}>
         
-        <Route index element={<HomePage />} />
+        <Route index element={<HomePage loggedIn={loggedIn} />} />
 
         <Route path="/login" element={loggedIn ? <Navigate replace to="/" /> : <LoginPage handleLogin={handleLogin} />} />
         
-        <Route path="/instructions" element={<InstructionsPage />} />
+        <Route path="/instructions" element={<InstructionsPage loggedIn={loggedIn} />} />
         
         <Route path="/leaderboard" element={<ProtectedRoute loggedIn={loggedIn}><LeaderboardPage /></ProtectedRoute>} />
 
-      {/*
 
-        <Route path="/game/:id" element={<ProtectedRoute loggedIn={loggedIn}><GamePage user={user} /></ProtectedRoute>} />
+        <Route path="/game/:id" element={<ProtectedRoute loggedIn={loggedIn}><GamePage user={user} setMessage={setMessage} /></ProtectedRoute>} />
         
         <Route path="*" element={ <NotFoundPage /> } />
-        */}
+
       </Route>
     </Routes>
   );
