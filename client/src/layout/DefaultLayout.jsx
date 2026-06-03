@@ -1,10 +1,12 @@
 import { Outlet } from "react-router";
 import NavHeader from "../components/Navbar";
 import { Container, Alert } from "react-bootstrap";
+import { useContext } from "react";
+import MessageContext from "../MessageContext";
 
-function DefaultLayout({ loggedIn, user, handleLogout, message, setMessage }) {
-
-  const handleCloseAlert = () => setMessage?.(null);
+function DefaultLayout({ loggedIn, user, handleLogout }) {
+  const { message, setMessage } = useContext(MessageContext);
+  const handleCloseAlert = () => setMessage(null);
 
   return (
     <>

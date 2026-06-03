@@ -1,12 +1,14 @@
 [![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/iZes9Qfg)
-# Exam #N: "Exam Title"
+# Exam #1: "Ultima corsa"
 ## Student: s353342 RUSCITTO VIRGINIA
 
 ## React Client Application Routes
 
-- Route `/`: page content and purpose
-- Route `/something/:param`: page content and purpose, param specification
-- ...
+- Route `/`: **HomePage** - Displays the welcome page and a play button for authenticated users
+- Route `/login`: **LoginPage** - Unauthenticated users can log in, otherwise it redirects to / if the user is already logged in
+- Route `/leaderboard`: **LeaderBoardPage** - Shows the leaderboard with the highest score achieved by each user. It is a protected route
+- Route `/game`: **GamePage** - Manages the entire game flow through the four phases: setup, planning, execution, and result
+- Route `*`: **NotFoundPage** - Deals with non-existing routes
 
 ## API Server
 
@@ -24,9 +26,6 @@
   - Response 200 OK: 
     ```json
         {
-          "lines": [
-            { "id": 1, "name": "Linea I — Via Appia" }
-          ],
           "stations": [
             { "id": 1, "name": "Roma" },
             { "id": 2, "name": "Capua" }
@@ -34,8 +33,6 @@
           "connections": [
             {
               "id": 1,
-              "lineId": 1,
-              "lineName": "Linea I — Via Appia",
               "stationAId": 1,
               "stationAName": "Roma",
               "stationBId": 2,
@@ -50,8 +47,11 @@
   - Response 200 OK:
     ```json
         [
-          { "username": "mrossi", "best_score": 24 },
-          { "username": "gbianchi", "best_score": 17 }
+          {
+            "username": "mrossi",
+            "bestScore": 24,
+            "date": "03/06/2026 14:32"
+          }
         ]
     ```
   - Response 401 Unauthorized: `{"error": "Not authorized"}`
@@ -61,7 +61,7 @@
   - Response 201 Created: 
     ```json
         {
-          "gameId": 1,
+          "id": 1,
           "startStation": { "id": 1, "name": "Roma" },
           "endStation":   { "id": 6, "name": "Antiochia" }
         }
@@ -72,51 +72,56 @@
 - **POST `/api/games/:id/route`**
   - Request body: `{"connectionIds": [1, 2, 3, 4, 5]}`
   - Response 200 OK (valid route):
-```json
-    {
-      "valid": true,
-      "segments": [
-        {
-          "from": "Roma",
-          "to": "Capua",
-          "eventDescription": "Trovi una moneta d'oro sul pavimento del vagone",
-          "coinEffect": 1,
-          "coinsAfter": 21
-        },
-        {
-          "from": "Capua",
-          "to": "Benevento",
-          "eventDescription": "Guasto a una porta del convoglio: partenza ritardata",
-          "coinEffect": -2,
-          "coinsAfter": 19
-        },
-        {
-          "from": "Benevento",
-          "to": "Brindisi",
-          "eventDescription": "Viaggio tranquillo, niente di particolare",
-          "coinEffect": 0,
-          "coinsAfter": 19
-        },
-        {
-          "from": "Brindisi",
-          "to": "Corinto",
-          "eventDescription": "Un senatore in viaggio assegna una corsia preferenziale al convoglio",
-          "coinEffect": 3,
-          "coinsAfter": 22
-        },
-        {
-          "from": "Corinto",
-          "to": "Antiochia",
-          "eventDescription": "Un acquedotto in manutenzione rallenta il traffico ferroviario",
-          "coinEffect": -3,
-          "coinsAfter": 19
-        }
-      ],
-      "finalScore": 19
-    }
-```
+      ```json
+          {
+            "valid": true,
+            "segments": [
+              {
+                "from": "Roma",
+                "to": "Capua",
+                "lineName": "Linea I — Via Appia",
+                "eventDescription": "Trovi una moneta d'oro sul pavimento del vagone",
+                "coinEffect": 1,
+                "coinsAfter": 21
+              },
+              {
+                "from": "Capua",
+                "to": "Benevento",
+                "lineName": "Linea I — Via Appia",
+                "eventDescription": "Guasto a una porta del convoglio: partenza ritardata",
+                "coinEffect": -2,
+                "coinsAfter": 19
+              },
+              {
+                "from": "Benevento",
+                "to": "Brindisi",
+                "lineName": "Linea I — Via Appia",
+                "eventDescription": "Viaggio tranquillo, niente di particolare",
+                "coinEffect": 0,
+                "coinsAfter": 19
+              },
+              {
+                "from": "Brindisi",
+                "to": "Corinto",
+                "lineName": "Linea I — Via Appia",
+                "eventDescription": "Un senatore in viaggio assegna una corsia preferenziale al convoglio",
+                "coinEffect": 3,
+                "coinsAfter": 22
+              },
+              {
+                "from": "Corinto",
+                "to": "Antiochia",
+                "lineName": "Linea I — Via Appia",
+                "eventDescription": "Un acquedotto in manutenzione rallenta il traffico ferroviario",
+                "coinEffect": -3,
+                "coinsAfter": 19
+              }
+            ],
+            "finalScore": 19
+          }
+      ```
   - Response 200 OK (invalid route): `{"valid": false, "segments": [], "finalScore": 0}`
-  - Response 400 Bad Request: `{"errors": [{"msg": "connectionIds must be a non-empty array"}]}`
+  - Response 400 Bad Request: `{"error": "Invalid data"}`
   - Response 401 Unauthorized: `{"error": "Not authorized"}`
   - Response 404 Not Found: `{"error": "Game not found"}`
   - Response 409 Conflict: `{"error": "Game already finalized"}`
@@ -133,14 +138,20 @@
 
 ## Main React Components
 
-- `ListOfSomething` (in `List.js`): component purpose and main functionality
-- `GreatButton` (in `GreatButton.js`): component purpose and main functionality
-- ...
+- `DefaultLayout` (in `layout/DefaultLayout.jsx`): shared application layout containing navigation bar and global alert messages provided through MessageContext
+- `AppNavbar` (in `omponents/Navbar.jsx`): it includes links to some available routes and login/logout controls
+- `LoginForm` (in `components/LoginForm.jsx`): controlled form that manages the insertion of user credentials
+- `LeaderboardTable` (in `components/LeaderboardTable.jsx`): shows the leaderboard and highlights the current user's row
+- `GamePage` (in `pages/GamePage.jsx`): it acts as a controller by managing the current game phase (setup, planning, execution, result) and the states across phases
+- `SetupPhase` (in `components/game/SetupPhase.jsx`): displays the complete network map and allows the player to start a new game
+- `PlanningPhase` (in `components/game/PlanningPhase.jsx`): handles the 90-second countdown timer, the selection of the route segments, and route submission
+- `ExecutionPhase` (in `components/game/ExecutionPhase.jsx`): displays the journey step by step, showing random events and updating the coin total after each segment
+- `ResultPhase` (in `components/game/ResultPhase.jsx`): displays the final score and route summary; allows the player to start a new game
+- `useGameTimer` (in `components/game/hooks/useGameTimer.js`): custom hook that manages the planning phase countdown. Exposes timeLeft, expired, and start/stop. Internally uses a useEffect-driven timeout chain that decrements the counter every 1000ms
 
-(only _main_ components, minor ones may be skipped)
 
 ## Screenshot
-
+//TODO inserire qui e sotto le info sulle  partite giocate
 ![Screenshot](./img/screenshot.jpg)
 
 ## Users Credentials
@@ -152,5 +163,16 @@
 | Luca   | Verdi    | lverdi   | luca01    | |
 
 ## Use of AI Tools
-Briefly describe whether you used any AI tools (e.g., ChatGPT, GitHub Copilot, Claude) while working on this project, for which purposes (e.g., clarifying concepts, debugging, generating code), and how you verified or adapted their output.
-If you did not use any AI tools, simply state so.
+
+- Implementation of graph algorithms (chatgpt)
+- Creation of the custom useGameTimer hook (chatgpt)
+- Support for CSS layout and styling refinement (chatgpt)
+- Generation of subway route images (gemini)
+- Creation of text for the instruction page (chatgpt)
+- Definition of API error codes (chatgpt)
+
+</br>
+
+- Development of database scripts and seed data (chatgpt)
+- Creation of REST client test cases (chatgpt)
+

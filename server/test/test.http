@@ -423,33 +423,3 @@ POST {{base}}/api/sessions
 Content-Type: {{contentType}}
 
 { username: mrossi, password: }
-
-###
-
-
-### =====================================================================
-### CHECKLIST MANUALE DOPO I TEST
-### =====================================================================
-###
-### ✅ 1.1  → 201, body { id, username, name, surname } (NO salt/password)
-### ✅ 1.4  → 401
-### ✅ 1.8  → 401
-### ✅ 1.9  → 200, dati utente
-### ✅ 1.10 → 200 o 204
-### ✅ 2.1  → 200, { lines:[...], stations:[...], connections:[...] }
-### ✅ 2.2  → 401
-### ✅ 3.1  → 200, array [ { id, username, best_score }, ... ] ordinato DESC
-### ✅ 4.1  → 201, { gameId, startStation:{id,name}, endStation:{id,name} }
-###           startStation.id ≠ endStation.id
-### ✅ 5.1  → 200, { valid:true, segments:[...], finalScore: >= 0 }
-### ✅ 5.2  → 409
-### ✅ 5.3  → 200, { valid:false, segments:[], finalScore:0 }
-### ✅ 5.7  → 400
-### ✅ 5.8  → 400
-### ✅ 5.9  → 400
-### ✅ 5.13 → 404
-### ✅ 5.14 → 400
-### ✅ 5.15 → 404
-### ✅ 5.18 → finalScore >= 0 sempre
-###
-### =====================================================================

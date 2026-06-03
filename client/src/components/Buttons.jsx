@@ -1,7 +1,6 @@
-import Button from "react-bootstrap/Button";
 import "../styles/App.css";
 
-export function AuthButton({ children, onClick, variant = "login" }) {
+export function AuthButton({ children, onClick }) {
   return (
     <button className="auth-btn" onClick={onClick} type="button">
       {children}
@@ -9,9 +8,9 @@ export function AuthButton({ children, onClick, variant = "login" }) {
   );
 }
 
-export function ActionButton({ children, onClick, disabled = false, type = "button"}) {
+export function ActionButton({ children, onClick, disabled = false, type = "button", className = ""}) {
   return (
-    <button className="action-btn" onClick={onClick} type={type} disabled={disabled}>
+    <button className={`action-btn ${className}`} onClick={onClick} type={type} disabled={disabled}>
       {children}
     </button>
   );
