@@ -39,7 +39,7 @@ function allDistancesFrom(graph, start) {
   return dist;
 }
 
-function tryBuildOrderedPath(connectionIds, connections, startId, endId) {
+function validateOrderedPath(connectionIds, connections, startId, endId) {
   if (!connectionIds || connectionIds.length < 1) return null;
 
   //la stessa tratta si può usare al massimo una volta
@@ -51,49 +51,25 @@ function tryBuildOrderedPath(connectionIds, connections, startId, endId) {
     if (!connMap.has(id)) return null;
   }
 
-  //costruzione del sottografo sempre bidirezionale
-  const adj = new Map();
+  const path = [];
+  let current = startId;
   for (const connId of connectionIds) {
     const c = connMap.get(connId);
-    const a = c.stationAId;
-    const b = c.stationBId;
 
-    if (!adj.has(a)) adj.set(a, []);
-    if (!adj.has(b)) adj.set(b, []);
-
-    const edgeAB = { to: b, connId, used: false, twin: null };
-    const edgeBA = { to: a, connId, used: false, twin: null };
-    edgeAB.twin = edgeBA;
-    edgeBA.twin = edgeAB;
-
-    adj.get(a).push(edgeAB);
-    adj.get(b).push(edgeBA);
+    if (c.stationAId === current) {
+      path.push({ from: current, to: c.stationBId, connId });
+      current = c.stationBId;
+    } else if (c.stationBId === current) {
+      path.push({ from: current, to: c.stationAId, connId });
+      current = c.stationAId;
+    } else {
+      return null;
+    }
   }
 
-  //dfs con backtracking
-  const path = [];
+  if (current !== endId) return null;
 
-  function dfs(currentId) {
-    if (path.length === connectionIds.length) {
-      return currentId === endId;
-    }
-
-    for (const edge of adj.get(currentId) || []) {
-      if (edge.used) continue;
-
-      edge.used = true;
-      edge.twin.used = true;
-      path.push({ connId: edge.connId, from: currentId, to: edge.to });
-
-      if (dfs(edge.to)) return true;
-
-      path.pop();
-      edge.used = false;
-      edge.twin.used = false;
-    }
-    return false;
-  }
-  return dfs(startId) ? path : null;
+  return path;
 }
 
-export default { buildGraph, allDistancesFrom, tryBuildOrderedPath };
+export default { buildGraph, allDistancesFrom, validateOrderedPath };

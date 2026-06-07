@@ -58,6 +58,7 @@ async function initNetwork() {
       const distances = graph.allDistancesFrom(cachedGraph, station.id);
       for (const [targetId, dist] of distances) {
         if (dist >= 3 && targetId > station.id)
+          //TODO per farlo più dinamico si può togliere il vincolo del >
           pairs.push([station, stationMap.get(targetId)]);
       }
     }
@@ -129,7 +130,7 @@ app.get("/api/sessions/current", (req, res) => {
 //network
 app.get("/api/network", isLoggedIn, async (req, res) => {
   res.json({
-    stations: cachedStations,
+    stations: cachedStations, //TODO per chè gli passo anceh le stations
     connections: cachedConnections.map((c) => ({
       id: c.id,
       stationAId: c.stationAId,
@@ -161,8 +162,9 @@ app.post("/api/games", isLoggedIn, async (req, res) => {
     if (!cachedValidPairs?.length) {
       return res.status(503).json({ error: "Network not ready" });
     }
-    const [start, end] =
+    const [s, e] =
       cachedValidPairs[Math.floor(Math.random() * cachedValidPairs.length)];
+    const [start, end] = Math.random() < 0.5 ? [s, e] : [e, s]; //randomizzare l'ordine di start e end
     const gameId = await gameDAO.createGame(
       req.user.id,
       start.id,
@@ -221,7 +223,7 @@ app.post(
         return res.json({ valid: false, segments: [], finalScore: 0 });
       }
 
-      const orderedPath = graph.tryBuildOrderedPath(
+      const orderedPath = graph.validateOrderedPath(
         connectionIds,
         cachedConnections,
         game.startStationId,

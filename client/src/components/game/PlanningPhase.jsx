@@ -1,7 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { Row, Col, Form } from "react-bootstrap";
 import useGameTimer from "./hooks/useGameTimer.js";
-import { useContext } from "react";
 import MessageContext from "../../MessageContext.jsx";
 import StationBox from "./StationBox";
 import TimerBadge from "./TimerBadge";
@@ -104,7 +103,7 @@ function PlanningPhase({ connections, startStation, endStation, onSubmit }) {
   useEffect(() => {
     if (!expired) return;
     onSubmit(selectedIds.map(Number));
-  }, [expired, selectedIds, onSubmit]);
+  }, [expired]); //il valore di selectedIds al momento del trigger è sempre fresco perché react aggiorna lo state prima di eseguire gli effects
 
   function toggleConnection(connId, checked) {
     setSelectedIds((prev) =>
@@ -113,8 +112,8 @@ function PlanningPhase({ connections, startStation, endStation, onSubmit }) {
   }
 
   function handleSubmit() {
-    if (selectedIds.length < 2) {
-      setMessage({ type: "warning", msg: "Seleziona almeno due tratte" });
+    if (selectedIds.length < 3) {
+      setMessage({ type: "warning", msg: "Seleziona almeno tre tratte" });
       return;
     }
     stop();
