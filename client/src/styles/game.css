@@ -61,6 +61,15 @@
   align-items: center;
 }
 
+.order-badge {
+  font-size: 0.75rem;
+  min-width: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
 .planning-header {
   background: var(--color-light-beige);
   border: 1.5px solid var(--color-gold);

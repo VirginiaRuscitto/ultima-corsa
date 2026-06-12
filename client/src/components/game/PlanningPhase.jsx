@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext } from "react";
-import { Row, Col, Form } from "react-bootstrap";
+import { Row, Col, Form, Badge } from "react-bootstrap";
 import useGameTimer from "./hooks/useGameTimer.js";
 import MessageContext from "../../MessageContext.jsx";
 import StationBox from "./StationBox";
@@ -47,24 +47,34 @@ function ConnectionsPanel({
   return (
     <div className="connections-panel p-3 d-flex flex-column">
       <div className="connections-list flex-grow-1 mb-3">
-        {connections.map((conn) => (
-          <Form.Check
-            key={conn.id}
-            className="mb-2"
-            type="checkbox"
-            checked={selectedIds.includes(conn.id)}
-            onChange={(e) => toggleConnection(conn.id, e.target.checked)}
-            label={
-              <div className="d-flex justify-content-between w-100">
-                <span>
-                  <strong>{conn.stationAName}</strong>
-                  <i className="bi bi-arrow-left-right mx-2"></i>
-                  <strong>{conn.stationBName}</strong>
-                </span>
-              </div>
-            }
-          />
-        ))}
+        {connections.map((conn) => {
+          const orderIndex = selectedIds.indexOf(conn.id);
+          const isSelected = orderIndex !== -1;
+          const orderNumber = isSelected ? orderIndex + 1 : null;
+          return (
+            <Form.Check
+              key={conn.id}
+              className="mb-2"
+              type="checkbox"
+              checked={isSelected}
+              onChange={(e) => toggleConnection(conn.id, e.target.checked)}
+              label={
+                <div className="d-flex justify-content-between w-100">
+                  <span>
+                    <strong>{conn.stationAName}</strong>
+                    <i className="bi bi-arrow-left-right mx-2"></i>
+                    <strong>{conn.stationBName}</strong>
+                  </span>
+                  {isSelected && (
+                    <Badge bg="secondary" className="ms-2 order-badge">
+                      {orderNumber}
+                    </Badge>
+                  )}
+                </div>
+              }
+            />
+          );
+        })}
       </div>
 
       <ActionButton onClick={onSubmit} className="action-btn w-100">
