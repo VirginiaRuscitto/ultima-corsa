@@ -6,10 +6,9 @@ import SetupPhase from "../components/game/SetupPhase.jsx";
 import PlanningPhase from "../components/game/PlanningPhase.jsx";
 import ExecutionPhase from "../components/game/ExecutionPhase.jsx";
 import ResultPhase from "../components/game/ResultPhase.jsx";
-import { ActionButton } from "../components/Buttons";
 import MessageContext from "../MessageContext";
 
-function GamePage({ user }) {
+function GamePage({ }) {
   const navigate = useNavigate();
 
   const [phase, setPhase] = useState("setup"); // setup-planning-execution-result

@@ -36,7 +36,6 @@ let cachedGraph = null;
 let cachedConnections = null;
 let cachedValidPairs = null;
 let cachedStations = null;
-let cachedLines = null;
 
 async function initNetwork() {
   try {
@@ -47,7 +46,6 @@ async function initNetwork() {
     ]);
 
     cachedConnections = connections;
-    cachedLines = lines;
     cachedStations = stations;
     cachedGraph = graph.buildGraph(connections);
 
@@ -68,7 +66,6 @@ async function initNetwork() {
   } catch (err) {
     console.error("initNetwork failed:", err);
     cachedStations = [];
-    cachedLines = [];
     cachedConnections = [];
     cachedValidPairs = [];
   }
@@ -129,6 +126,9 @@ app.get("/api/sessions/current", (req, res) => {
 
 //network
 app.get("/api/network", isLoggedIn, async (req, res) => {
+  if (!cachedStations || !cachedConnections) {
+    return res.status(500).json({ error: "Cannot load network" });
+  }
   res.json({
     stations: cachedStations, //TODO per chè gli passo anceh le stations
     connections: cachedConnections.map((c) => ({
@@ -211,7 +211,7 @@ app.post(
       if (game.finalScore !== null)
         return res.status(409).json({ error: "Game already finalized" });
 
-      if (connectionIds.length < 2) {
+      if (connectionIds.length < 3) {
         await gameDAO.finalizeGame(gameId, req.user.id, 0);
         return res.json({ valid: false, segments: [], finalScore: 0 });
       }

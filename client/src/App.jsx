@@ -64,11 +64,19 @@ function App() {
   }
 
   function handleLogout() {
-    API.logout().then(() => {
-      setLoggedIn(false);
-      setUser(null);
-      navigate("/");
-    });
+    API.logout()
+      .then(() => {
+        setLoggedIn(false);
+        setUser(null);
+        setMessage(null);
+        navigate("/");
+      })
+      .catch(() => {
+        setLoggedIn(false);
+        setUser(null);
+        setMessage(null);
+        navigate("/");
+      });
   }
 
   if (initializing) {
@@ -122,7 +130,7 @@ function App() {
             path="/game"
             element={
               <ProtectedRoute loggedIn={loggedIn}>
-                <GamePage user={user} />
+                <GamePage />
               </ProtectedRoute>
             }
           />

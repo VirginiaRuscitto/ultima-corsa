@@ -1,7 +1,6 @@
 import { Navbar, Nav, Container, Button, Row, Col } from "react-bootstrap";
 import { NavLink, useNavigate } from "react-router";
 import { AuthButton } from "./Buttons";
-import "../styles/App.css";
 
 function AppNavbar({ loggedIn, user, handleLogout }) {
   const navigate = useNavigate();

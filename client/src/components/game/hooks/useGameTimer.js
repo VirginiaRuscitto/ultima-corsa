@@ -11,7 +11,7 @@ function useGameTimer(duration) {
       return;
     }
     const id = setTimeout(() => {
-      setTimeLeft((prev) => prev - 1);
+      setTimeLeft((prev) => (prev !== null ? prev - 1 : null));
     }, 1000);
     return () => clearTimeout(id);
   }, [timeLeft]);

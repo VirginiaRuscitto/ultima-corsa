@@ -5,9 +5,10 @@
 ## React Client Application Routes
 
 - Route `/`: **HomePage** - Displays the welcome page and a play button for authenticated users
-- Route `/login`: **LoginPage** - Unauthenticated users can log in, otherwise it redirects to / if the user is already logged in
+- Route `/login`: **LoginPage** - Login form for unauthenticated users; redirects to / if already logged in
+- Route `/instructions`: **InstructionsPage** - Game rules
 - Route `/leaderboard`: **LeaderBoardPage** - Shows the leaderboard with the highest score achieved by each user. It is a protected route
-- Route `/game`: **GamePage** - Manages the entire game flow through the four phases: setup, planning, execution, and result
+- Route `/game`: **GamePage** - Manages the entire game flow through four phases: setup, planning, execution, and result. It is a protected route
 - Route `*`: **NotFoundPage** - Deals with non-existing routes
 
 ## API Server
@@ -139,7 +140,7 @@
 ## Main React Components
 
 - `DefaultLayout` (in `layout/DefaultLayout.jsx`): shared application layout containing navigation bar and global alert messages provided through MessageContext
-- `AppNavbar` (in `omponents/Navbar.jsx`): it includes links to some available routes and login/logout controls
+- `AppNavbar` (in `components/Navbar.jsx`): it includes links to some available routes and login/logout controls
 - `LoginForm` (in `components/LoginForm.jsx`): controlled form that manages the insertion of user credentials
 - `LeaderboardTable` (in `components/LeaderboardTable.jsx`): shows the leaderboard and highlights the current user's row
 - `GamePage` (in `pages/GamePage.jsx`): it acts as a controller by managing the current game phase (setup, planning, execution, result) and the states across phases
