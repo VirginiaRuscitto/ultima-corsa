@@ -43,7 +43,8 @@ CREATE TABLE games (
     FOREIGN KEY (start_station_id) REFERENCES stations(id),
     FOREIGN KEY (end_station_id) REFERENCES stations(id),
 
-    CHECK (start_station_id <> end_station_id)
+    CHECK (start_station_id <> end_station_id),
+    CHECK (final_score IS NULL OR final_score >= 0)
 );
 
 CREATE TABLE connections (
