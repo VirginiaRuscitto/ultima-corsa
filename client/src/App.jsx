@@ -81,9 +81,31 @@ function App() {
 
   if (initializing) {
     return (
-      <div className="d-flex justify-content-center align-items-center">
-        <Spinner animation="border" />
-      </div>
+      <MessageContext.Provider value={messageContextValue}>
+        <Routes>
+          <Route
+            element={
+              <DefaultLayout
+                loggedIn={false}
+                user={null}
+                handleLogout={() => {}}
+              />
+            }
+          >
+            <Route
+              index
+              element={
+                <div
+                  className="d-flex justify-content-center align-items-center"
+                  style={{ marginTop: "20vh" }}
+                >
+                  <Spinner animation="border" />
+                </div>
+              }
+            />
+          </Route>
+        </Routes>
+      </MessageContext.Provider>
     );
   }
 

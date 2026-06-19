@@ -25,7 +25,10 @@ function LeaderboardPage({ user }) {
 
   if (loading) {
     return (
-      <div className="d-flex justify-content-center align-items-center text-center">
+      <div
+        className="d-flex flex-column justify-content-center align-items-center text-center"
+        style={{ minHeight: "40vh" }}
+      >
         <Spinner animation="border" className="mb-3" />
         <p className="text-muted">Caricamento classifica...</p>
       </div>

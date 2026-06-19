@@ -22,10 +22,11 @@ function useGameTimer(duration) {
   }
 
   function stop() {
+    setExpired(false);
     setTimeLeft(null);
   }
 
-  return { timeLeft: timeLeft ?? 0, expired, start, stop };
+  return { timeLeft: timeLeft ?? duration, expired, start, stop };
 }
 
 export default useGameTimer;

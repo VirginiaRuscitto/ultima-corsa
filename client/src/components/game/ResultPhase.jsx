@@ -71,7 +71,7 @@ function SegmentsList({ segments }) {
 
       <Card.Body className="p-0">
         {segments.map((seg, i) => (
-          <SegmentRow key={i} seg={seg} />
+          <SegmentRow key={`${seg.from}-${seg.to}-${seg.lineName}`} seg={seg} />
         ))}
       </Card.Body>
     </Card>
@@ -93,7 +93,7 @@ function ResultPhase({ routeResult, onNewGame, onGoHome, gameData }) {
     });
 
     return () => setMessage(null);
-  }, [routeResult]);
+  }, [routeResult, setMessage]);
 
   return (
     <div className="text-center execution-wrapper">

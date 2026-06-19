@@ -12,7 +12,7 @@ const handleResponse = async (response) => {
 
   if (!response.ok) {
     const err = new Error(
-      data?.error || response.statusText || "Unknown error",
+      data?.error || data?.message || response.statusText || "Unknown error",
     );
     err.status = response.status;
     err.details = data;

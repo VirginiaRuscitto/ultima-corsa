@@ -21,7 +21,7 @@
   - Response 200 OK: `{"id": 1, "username": "mrossi", "name": "Marco", "surname": "Rossi"}`
   - Response 401 Unauthorized: `{"error": "Unauthenticated user"}`
 - **DELETE `/api/sessions/current`**
-  - Response 200 OK: No response body
+  - Response 204 No Content: No response body
   - Response 401 Unauthorized: `{"error": "Not authorized"}`
 - **GET `/api/network`**
   - Response 200 OK: 
@@ -152,8 +152,7 @@
 
 
 ## Screenshot
-//TODO inserire qui e sotto le info sulle  partite giocate
-![Screenshot](./img/screenshot.jpg)
+![Screenshot partita](./screenshot/partita.jpg)
 
 ## Users Credentials
 

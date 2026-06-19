@@ -27,17 +27,13 @@ export default function OthersDAO() {
     });
   };
 
-  this.getRandomEvent = () => {
+  this.getAllEvents = () => {
     return new Promise((resolve, reject) => {
-      db.get(
-        "SELECT id, description, effect FROM events ORDER BY RANDOM() LIMIT 1",
-        [],
-        (err, row) => {
-          if (err) reject(err);
-          else if (!row) reject(new Error("No events found"));
-          else resolve(new Event(row.id, row.description, row.effect));
-        },
-      );
+      db.all("SELECT id, description, effect FROM events", [], (err, rows) => {
+        if (err) reject(err);
+        else if (!rows.length) reject(new Error("No events found"));
+        else resolve(rows.map((r) => new Event(r.id, r.description, r.effect)));
+      });
     });
   };
 }

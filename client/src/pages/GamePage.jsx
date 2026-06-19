@@ -101,6 +101,7 @@ function GamePage({ }) {
     setGameData(null);
     setRouteResult(null);
     setPhase("setup");
+    setMessage(null);
   }
 
   if (loading) {

@@ -56,7 +56,6 @@ async function initNetwork() {
       const distances = graph.allDistancesFrom(cachedGraph, station.id);
       for (const [targetId, dist] of distances) {
         if (dist >= 3 && targetId > station.id)
-          //TODO per farlo più dinamico si può togliere il vincolo del >
           pairs.push([station, stationMap.get(targetId)]);
       }
     }
@@ -116,7 +115,7 @@ app.post("/api/sessions", passport.authenticate("local"), (req, res) => {
 });
 
 app.delete("/api/sessions/current", isLoggedIn, (req, res) => {
-  req.logout(() => res.end());
+  req.logout(() => res.sendStatus(204));
 });
 
 app.get("/api/sessions/current", (req, res) => {
@@ -238,11 +237,12 @@ app.post(
       const stationMap = new Map(cachedStations.map((s) => [s.id, s.name]));
       const connMap = new Map(cachedConnections.map((c) => [c.id, c]));
 
+      const allEvents = await othersDAO.getAllEvents();
       let coins = 20;
       const segments = [];
       for (const { from, to, connId } of orderedPath) {
         const conn = connMap.get(connId);
-        const event = await othersDAO.getRandomEvent();
+        const event = allEvents[Math.floor(Math.random() * allEvents.length)];
         coins += event.effect;
         segments.push({
           from: stationMap.get(from),

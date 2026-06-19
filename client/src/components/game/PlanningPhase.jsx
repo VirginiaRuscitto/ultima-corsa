@@ -113,7 +113,7 @@ function PlanningPhase({ connections, startStation, endStation, onSubmit }) {
   useEffect(() => {
     if (!expired) return;
     onSubmit(selectedIds.map(Number));
-  }, [expired]); //il valore di selectedIds al momento del trigger è sempre fresco perché react aggiorna lo state prima di eseguire gli effects
+  }, [expired, onSubmit]); //il valore di selectedIds al momento del trigger è sempre aggiornato perché react aggiorna lo state prima di eseguire gli effects
 
   function toggleConnection(connId, checked) {
     setSelectedIds((prev) =>
