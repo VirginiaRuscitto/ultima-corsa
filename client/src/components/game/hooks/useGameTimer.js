@@ -1,32 +1,32 @@
 import { useState, useEffect } from "react";
+import dayjs from "dayjs";
 
-function useGameTimer(duration) {
-  const [timeLeft, setTimeLeft] = useState(null);
-  const [expired, setExpired] = useState(false);
+function useGameTimer(duration, playedAt) {
+  const initialElapsed = playedAt ? dayjs().diff(dayjs(playedAt), "second") : 0;
+  const [timeLeft, setTimeLeft] = useState(
+    Math.max(0, duration - initialElapsed),
+  );
+  const [active, setActive] = useState(true);
 
   useEffect(() => {
-    if (timeLeft === null) return;
-    if (timeLeft <= 0) {
-      setExpired(true);
-      return;
-    }
-    const id = setTimeout(() => {
-      setTimeLeft((prev) => (prev !== null ? prev - 1 : null));
-    }, 1000);
-    return () => clearTimeout(id);
-  }, [timeLeft]);
+    if (!playedAt || !active) return;
 
-  function start() {
-    setExpired(false);
-    setTimeLeft(duration);
-  }
+    const tick = () => {
+      const elapsed = dayjs().diff(dayjs(playedAt), "second");
+      setTimeLeft(Math.max(0, duration - elapsed));
+    };
+
+    tick();
+
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, [playedAt, active]);
 
   function stop() {
-    setExpired(false);
-    setTimeLeft(null);
+    setActive(false);
   }
 
-  return { timeLeft: timeLeft ?? duration, expired, start, stop };
+  return { timeLeft, expired: timeLeft === 0, stop };
 }
 
 export default useGameTimer;

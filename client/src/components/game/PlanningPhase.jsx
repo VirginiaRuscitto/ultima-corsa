@@ -93,10 +93,10 @@ function shuffle(array) {
   return arr;
 }
 
-function PlanningPhase({ connections, startStation, endStation, onSubmit }) {
+function PlanningPhase({ connections, startStation, endStation, playedAt, onSubmit }) {
   const [selectedIds, setSelectedIds] = useState([]);
   const [shuffledConnections, setShuffledConnections] = useState([]);
-  const { timeLeft, expired, start, stop } = useGameTimer(90);
+  const { timeLeft, expired, stop } = useGameTimer(90, playedAt);
 
   const { setMessage } = useContext(MessageContext);
 
@@ -105,10 +105,6 @@ function PlanningPhase({ connections, startStation, endStation, onSubmit }) {
       setShuffledConnections(shuffle(connections));
     }
   }, [connections]);
-
-  useEffect(() => {
-    start();
-  }, []);
 
   useEffect(() => {
     if (!expired) return;

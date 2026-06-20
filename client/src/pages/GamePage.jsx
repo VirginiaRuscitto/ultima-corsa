@@ -141,6 +141,7 @@ function GamePage({ }) {
           connections={network.connections}
           startStation={gameData.startStation}
           endStation={gameData.endStation}
+          playedAt={gameData.playedAt}
           onSubmit={handleSubmitRoute}
         />
       )}
