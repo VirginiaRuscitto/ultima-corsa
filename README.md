@@ -175,6 +175,7 @@
 ## Screenshot
 
 ![Screenshot partita](./screenshot/partita.jpg)
+![Screenshot classifica](./screenshot/classifica.jpg)
 
 ## Users Credentials
 
