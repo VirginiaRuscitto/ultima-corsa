@@ -10,7 +10,8 @@
 - Route `/login`: **LoginPage** - Login form for unauthenticated users; redirects to / if already logged in
 - Route `/instructions`: **InstructionsPage** - Game rules
 - Route `/leaderboard`: **LeaderBoardPage** - Shows the leaderboard with the highest score achieved by each user. It is a protected route
-- Route `/game`: **GamePage** - Manages the entire game flow through four phases: setup, planning, execution, and result. It is a protected route
+- Route `/game`: **SetupPage** - Displays the complete network map and lets the player start a new game. It is a protected route
+- Route `/game/:id`: **GamePage** - Manages an existing game through its remaining phases: planning, execution, and result. It is a protected route
 - Route `*`: **NotFoundPage** - Deals with non-existing routes
 
 ## API Server
@@ -76,6 +77,21 @@
   - Response 401 Unauthorized: `{"error": "Not authorized"}`
   - Response 503 Service Unavailable: `{"error": "Network not ready"}`
   - Response 500 Internal Server Error: `{"error": "Cannot create game"}`
+- **GET `/api/games/:id`**
+  - Response 200 OK:
+    ```json
+    {
+      "id": 1,
+      "startStation": { "id": 1, "name": "Roma" },
+      "endStation": { "id": 6, "name": "Antiochia" },
+      "finalScore": null,
+      "playedAt": "2026-06-20 14:30:45"
+    }
+    ```
+  - Response 400 Bad Request: `{"error": "Invalid data"}`
+  - Response 401 Unauthorized: `{"error": "Not authorized"}`
+  - Response 404 Not Found: `{"error": "Game not found"}`
+  - Response 500 Internal Server Error: `{"error": "Cannot load game"}`
 - **POST `/api/games/:id/route`**
   - Request body: `{"connectionIds": [1, 2, 3, 4, 5]}`
   - Response 200 OK (valid route):
@@ -149,11 +165,11 @@
 - `AppNavbar` (in `components/Navbar.jsx`): it includes links to some available routes and login/logout controls
 - `LoginForm` (in `components/LoginForm.jsx`): controlled form that manages the insertion of user credentials
 - `LeaderboardTable` (in `components/LeaderboardTable.jsx`): shows the leaderboard and highlights the current user's row
-- `GamePage` (in `pages/GamePage.jsx`): it acts as a controller by managing the current game phase (setup, planning, execution, result) and the states across phases
-- `SetupPhase` (in `components/game/SetupPhase.jsx`): displays the complete network map and allows the player to start a new game
+- `SetupPage` (in `pages/SetupPage.jsx`): displays the complete network map and allows the player to start a new game
+- `GamePage` (in `pages/GamePage.jsx`): it acts as a controller for an existing game, it manages the current phase (planning, execution, result) and the state shared across phases
 - `PlanningPhase` (in `components/game/PlanningPhase.jsx`): handles the 90-second countdown timer, the selection of the route segments, and route submission
 - `ExecutionPhase` (in `components/game/ExecutionPhase.jsx`): displays the journey step by step, showing random events and updating the coin total after each segment
-- `ResultPhase` (in `components/game/ResultPhase.jsx`): displays the final score and route summary; allows the player to start a new game
+- `ResultPhase` (in `components/game/ResultPhase.jsx`): displays the final score and route summary, allows the player to start a new game
 - `useGameTimer` (in `components/game/hooks/useGameTimer.js`): custom hook that manages the planning phase countdown. Exposes timeLeft, expired, and start/stop. Internally uses a useEffect-driven timeout chain that decrements the counter every 1000ms
 
 ## Screenshot
@@ -162,10 +178,10 @@
 
 ## Users Credentials
 
-|  Nome  | Cognome | Username | Password | Info |
+|  Name  | Surname | Username | Password | Info |
 | :----: | :-----: | :------: | :------: | :--: |
-| Marco  |  Rossi  |  mrossi  | marco01  |      |
-| Giulia | Bianchi | gbianchi | giulia01 |      |
+| Marco  |  Rossi  |  mrossi  | marco01  | 2 games played |
+| Giulia | Bianchi | gbianchi | giulia01 | 4 games played |
 |  Luca  |  Verdi  |  lverdi  |  luca01  |      |
 
 ## Use of AI Tools
