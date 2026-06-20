@@ -78,6 +78,13 @@ function SegmentsList({ segments }) {
   );
 }
 
+const FAILURE_MESSAGES = {
+  too_short: "Percorso troppo corto: servono almeno 3 tratte",
+  time_expired:
+    "La planning phase è stata completata in un tempo superiore a 90 secondi",
+  invalid_path: "Il percorso inviato non è valido",
+};
+
 function ResultPhase({ routeResult, onNewGame, onGoHome, gameData }) {
   const { valid, finalScore, segments } = routeResult || {};
   const { setMessage } = useContext(MessageContext);
@@ -89,7 +96,8 @@ function ResultPhase({ routeResult, onNewGame, onGoHome, gameData }) {
       type: valid ? "success" : "danger",
       msg: valid
         ? `Percorso completato con ${segments.length} tratte!`
-        : "Percorso non valido: hai perso tutte le monete.",
+        : FAILURE_MESSAGES[routeResult.reason] ||
+          "Il percorso inviato non è valido",
     });
 
     return () => setMessage(null);

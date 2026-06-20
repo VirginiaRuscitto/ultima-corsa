@@ -58,6 +58,7 @@ function App() {
 
   function handleLogin(credentials) {
     return API.login(credentials).then((u) => {
+      //catch non serve perchè gestisco in login
       setLoggedIn(true);
       setUser(u);
     });
@@ -65,13 +66,8 @@ function App() {
 
   function handleLogout() {
     API.logout()
-      .then(() => {
-        setLoggedIn(false);
-        setUser(null);
-        setMessage(null);
-        navigate("/");
-      })
-      .catch(() => {
+      .catch(() => {})
+      .finally(() => {
         setLoggedIn(false);
         setUser(null);
         setMessage(null);

@@ -63,7 +63,6 @@ const getNetwork = async () => {
   const data = await handleResponse(response);
 
   return {
-    stations: data.stations.map((s) => new Station(s.id, s.name)),
     connections: data.connections.map(
       (c) =>
         new Connection(

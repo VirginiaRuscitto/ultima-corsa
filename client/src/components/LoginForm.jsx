@@ -33,12 +33,12 @@ function LoginForm({ onSubmit }) {
       {error && <Alert variant="danger">{error}</Alert>}
 
       <Form onSubmit={handleSubmit}>
-        <Form.Group className="mb-3">
+        <Form.Group className="mb-3" controlId="loginUsername">
           <Form.Label>Username</Form.Label>
           <Form.Control value={username} onChange={(e) => {setUsername(e.target.value); if (error) setError("");}} disabled={isSubmitting}/>
         </Form.Group>
 
-        <Form.Group className="mb-4">
+        <Form.Group className="mb-4" controlId="loginPassword">
           <Form.Label>Password</Form.Label>
           <Form.Control type="password" value={password} onChange={(e) => {setPassword(e.target.value); if (error) setError("");}} disabled={isSubmitting}/>
         </Form.Group>

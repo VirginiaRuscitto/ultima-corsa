@@ -1,5 +1,7 @@
 [![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/iZes9Qfg)
+
 # Exam #1: "Ultima corsa"
+
 ## Student: s353342 RUSCITTO VIRGINIA
 
 ## React Client Application Routes
@@ -24,13 +26,9 @@
   - Response 204 No Content: No response body
   - Response 401 Unauthorized: `{"error": "Not authorized"}`
 - **GET `/api/network`**
-  - Response 200 OK: 
+  - Response 200 OK:
     ```json
         {
-          "stations": [
-            { "id": 1, "name": "Roma" },
-            { "id": 2, "name": "Capua" }
-          ],
           "connections": [
             {
               "id": 1,
@@ -38,6 +36,13 @@
               "stationAName": "Roma",
               "stationBId": 2,
               "stationBName": "Capua"
+            };
+            {
+              "id": 2,
+              "stationAId": 2,
+              "stationAName": "Capua",
+              "stationBId": 3,
+              "stationBName": "Benevento"
             }
           ]
         }
@@ -47,25 +52,26 @@
 - **GET `/api/leaderboard`**
   - Response 200 OK:
     ```json
-        [
-          {
-            "username": "mrossi",
-            "bestScore": 24,
-            "date": "03/06/2026 14:32"
-          }
-        ]
+    [
+      {
+        "username": "mrossi",
+        "bestScore": 24,
+        "date": "03/06/2026 14:32"
+      }
+    ]
     ```
   - Response 401 Unauthorized: `{"error": "Not authorized"}`
   - Response 500 Internal Server Error: `{"error": "Cannot load leaderboard"}`
 - **POST `/api/games`**
   - Request body: None
-  - Response 201 Created: 
+  - Response 201 Created:
     ```json
-        {
-          "id": 1,
-          "startStation": { "id": 1, "name": "Roma" },
-          "endStation":   { "id": 6, "name": "Antiochia" }
-        }
+    {
+      "id": 1,
+      "startStation": { "id": 1, "name": "Roma" },
+      "endStation": { "id": 6, "name": "Antiochia" },
+      "playedAt": "2026-06-20 14:30:45"
+    }
     ```
   - Response 401 Unauthorized: `{"error": "Not authorized"}`
   - Response 503 Service Unavailable: `{"error": "Network not ready"}`
@@ -73,55 +79,55 @@
 - **POST `/api/games/:id/route`**
   - Request body: `{"connectionIds": [1, 2, 3, 4, 5]}`
   - Response 200 OK (valid route):
-      ```json
-          {
-            "valid": true,
-            "segments": [
-              {
-                "from": "Roma",
-                "to": "Capua",
-                "lineName": "Linea I — Via Appia",
-                "eventDescription": "Trovi una moneta d'oro sul pavimento del vagone",
-                "coinEffect": 1,
-                "coinsAfter": 21
-              },
-              {
-                "from": "Capua",
-                "to": "Benevento",
-                "lineName": "Linea I — Via Appia",
-                "eventDescription": "Guasto a una porta del convoglio: partenza ritardata",
-                "coinEffect": -2,
-                "coinsAfter": 19
-              },
-              {
-                "from": "Benevento",
-                "to": "Brindisi",
-                "lineName": "Linea I — Via Appia",
-                "eventDescription": "Viaggio tranquillo, niente di particolare",
-                "coinEffect": 0,
-                "coinsAfter": 19
-              },
-              {
-                "from": "Brindisi",
-                "to": "Corinto",
-                "lineName": "Linea I — Via Appia",
-                "eventDescription": "Un senatore in viaggio assegna una corsia preferenziale al convoglio",
-                "coinEffect": 3,
-                "coinsAfter": 22
-              },
-              {
-                "from": "Corinto",
-                "to": "Antiochia",
-                "lineName": "Linea I — Via Appia",
-                "eventDescription": "Un acquedotto in manutenzione rallenta il traffico ferroviario",
-                "coinEffect": -3,
-                "coinsAfter": 19
-              }
-            ],
-            "finalScore": 19
-          }
-      ```
-  - Response 200 OK (invalid route): `{"valid": false, "segments": [], "finalScore": 0}`
+    ```json
+    {
+      "valid": true,
+      "segments": [
+        {
+          "from": "Roma",
+          "to": "Capua",
+          "lineName": "Linea I — Via Appia",
+          "eventDescription": "Trovi una moneta d'oro sul pavimento del vagone",
+          "coinEffect": 1,
+          "coinsAfter": 21
+        },
+        {
+          "from": "Capua",
+          "to": "Benevento",
+          "lineName": "Linea I — Via Appia",
+          "eventDescription": "Guasto a una porta del convoglio: partenza ritardata",
+          "coinEffect": -2,
+          "coinsAfter": 19
+        },
+        {
+          "from": "Benevento",
+          "to": "Brindisi",
+          "lineName": "Linea I — Via Appia",
+          "eventDescription": "Viaggio tranquillo, niente di particolare",
+          "coinEffect": 0,
+          "coinsAfter": 19
+        },
+        {
+          "from": "Brindisi",
+          "to": "Corinto",
+          "lineName": "Linea I — Via Appia",
+          "eventDescription": "Un senatore in viaggio assegna una corsia preferenziale al convoglio",
+          "coinEffect": 3,
+          "coinsAfter": 22
+        },
+        {
+          "from": "Corinto",
+          "to": "Antiochia",
+          "lineName": "Linea I — Via Appia",
+          "eventDescription": "Un acquedotto in manutenzione rallenta il traffico ferroviario",
+          "coinEffect": -3,
+          "coinsAfter": 19
+        }
+      ],
+      "finalScore": 19
+    }
+    ```
+  - Response 200 OK (invalid route): `{"valid": false, reason: "invalid_path", "segments": [], "finalScore": 0}`
   - Response 400 Bad Request: `{"error": "Invalid data"}`
   - Response 401 Unauthorized: `{"error": "Not authorized"}`
   - Response 404 Not Found: `{"error": "Game not found"}`
@@ -150,17 +156,17 @@
 - `ResultPhase` (in `components/game/ResultPhase.jsx`): displays the final score and route summary; allows the player to start a new game
 - `useGameTimer` (in `components/game/hooks/useGameTimer.js`): custom hook that manages the planning phase countdown. Exposes timeLeft, expired, and start/stop. Internally uses a useEffect-driven timeout chain that decrements the counter every 1000ms
 
-
 ## Screenshot
+
 ![Screenshot partita](./screenshot/partita.jpg)
 
 ## Users Credentials
 
-| Nome   | Cognome | Username | Password     | Info     |
-|:------:|:--------:|:--------:|:------------:|:------------:|
-| Marco  | Rossi    | mrossi   | marco01  | |
-| Giulia | Bianchi  | gbianchi | giulia01    | |
-| Luca   | Verdi    | lverdi   | luca01    | |
+|  Nome  | Cognome | Username | Password | Info |
+| :----: | :-----: | :------: | :------: | :--: |
+| Marco  |  Rossi  |  mrossi  | marco01  |      |
+| Giulia | Bianchi | gbianchi | giulia01 |      |
+|  Luca  |  Verdi  |  lverdi  |  luca01  |      |
 
 ## Use of AI Tools
 
@@ -170,9 +176,4 @@
 - Generation of subway route images (gemini)
 - Creation of text for the instruction page (chatgpt)
 - Definition of API error codes (chatgpt)
-
-</br>
-
-- Development of database scripts and seed data (chatgpt)
-- Creation of REST client test cases (chatgpt)
-
+- Creation of database scripts and seed data (chatgpt)
