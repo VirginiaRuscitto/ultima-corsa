@@ -13,7 +13,7 @@ const GAME_DURATION_SECONDS = 90;
 function GamePage() {
   const navigate = useNavigate();
   const { id } = useParams();
-  const { state } = useLocation();
+  const { state, pathname } = useLocation();
 
   const [phase, setPhase] = useState("loading"); // loading-planning-execution-result
   const [network, setNetwork] = useState(null);
@@ -39,6 +39,8 @@ function GamePage() {
   }, []);
 
   useEffect(() => {
+    if (phase !== "loading") return; //altrimenti dopo submitRoute() il cambio di `state` (state: null) rieseguirebbe l'effect ma a noi serve solo in fase di planning del gioco
+
     function applyGame(data) {
       if (data.finalScore != null) {
         //controlla sia null che undefined
@@ -72,7 +74,7 @@ function GamePage() {
         setMessage({ type: "danger", msg: "Impossibile caricare la partita" });
         navigate("/game");
       });
-  }, [id]);
+  }, [id, state]);
 
   useEffect(() => {
     return () => setMessage(null);
@@ -83,7 +85,7 @@ function GamePage() {
 
     try {
       const result = await API.submitRoute(gameData.id, connectionIds);
-      navigate(location.pathname, { replace: true, state: null }); //importante per sigillare correttamente una partita anche lato frontend
+      navigate(pathname, { replace: true, state: null }); //importante per sigillare correttamente una partita anche lato frontend
       setRouteResult(result);
       setPhase(result.valid ? "execution" : "result");
     } catch {

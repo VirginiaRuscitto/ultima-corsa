@@ -93,10 +93,18 @@ function shuffle(array) {
   return arr;
 }
 
-function PlanningPhase({ connections, startStation, endStation, playedAt, duration, onSubmit }) {
+function PlanningPhase({
+  connections,
+  startStation,
+  endStation,
+  playedAt,
+  duration,
+  onSubmit,
+}) {
   const [selectedIds, setSelectedIds] = useState([]);
   const [shuffledConnections, setShuffledConnections] = useState([]);
   const { timeLeft, expired, stop } = useGameTimer(duration, playedAt);
+  const [hasSubmitted, setHasSubmitted] = useState(false);
 
   const { setMessage } = useContext(MessageContext);
 
@@ -107,9 +115,10 @@ function PlanningPhase({ connections, startStation, endStation, playedAt, durati
   }, [connections]);
 
   useEffect(() => {
-    if (!expired) return;
+    if (!expired || hasSubmitted) return;
+    setHasSubmitted(true);
     onSubmit(selectedIds.map(Number));
-  }, [expired, onSubmit]); //il valore di selectedIds al momento del trigger è sempre aggiornato perché react aggiorna lo state prima di eseguire gli effects
+  }, [expired, onSubmit, selectedIds, hasSubmitted]);
 
   function toggleConnection(connId, checked) {
     setSelectedIds((prev) =>
@@ -122,6 +131,8 @@ function PlanningPhase({ connections, startStation, endStation, playedAt, durati
       setMessage({ type: "warning", msg: "Seleziona almeno tre tratte" });
       return;
     }
+    if (hasSubmitted) return;
+    setHasSubmitted(true);
     stop();
     onSubmit(selectedIds.map(Number));
   }
