@@ -86,6 +86,14 @@ const createGame = async () => {
   return await handleResponse(response);
 };
 
+const getGame = async (gameId) => {
+  const response = await fetch(`${SERVER_URL}/api/games/${gameId}`, {
+    credentials: "include",
+  });
+
+  return await handleResponse(response);
+};
+
 const submitRoute = async (gameId, connectionIds) => {
   const response = await fetch(`${SERVER_URL}/api/games/${gameId}/route`, {
     method: "POST",
@@ -114,5 +122,6 @@ const API = {
   createGame,
   submitRoute,
   getLeaderboard,
+  getGame,
 };
 export default API;

@@ -15,6 +15,7 @@ import LoginPage from "./pages/LoginPage";
 import InstructionsPage from "./pages/InstructionsPage";
 import LeaderboardPage from "./pages/LeaderboardPage";
 import GamePage from "./pages/GamePage";
+import SetupPage from "./pages/SetupPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import API from "../API.js";
 
@@ -146,6 +147,15 @@ function App() {
 
           <Route
             path="/game"
+            element={
+              <ProtectedRoute loggedIn={loggedIn}>
+                <SetupPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/game/:id"
             element={
               <ProtectedRoute loggedIn={loggedIn}>
                 <GamePage />

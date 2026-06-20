@@ -93,10 +93,10 @@ function shuffle(array) {
   return arr;
 }
 
-function PlanningPhase({ connections, startStation, endStation, playedAt, onSubmit }) {
+function PlanningPhase({ connections, startStation, endStation, playedAt, duration, onSubmit }) {
   const [selectedIds, setSelectedIds] = useState([]);
   const [shuffledConnections, setShuffledConnections] = useState([]);
-  const { timeLeft, expired, stop } = useGameTimer(90, playedAt);
+  const { timeLeft, expired, stop } = useGameTimer(duration, playedAt);
 
   const { setMessage } = useContext(MessageContext);
 

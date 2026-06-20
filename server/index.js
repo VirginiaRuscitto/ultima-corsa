@@ -39,17 +39,16 @@ let cachedStations = null;
 
 async function initNetwork() {
   try {
-    const [stations, connections, lines] = await Promise.all([
+    const [stations, connections] = await Promise.all([
       networkDAO.getAllStations(),
       networkDAO.getAllConnections(),
-      networkDAO.getAllLines(),
     ]);
 
     cachedConnections = connections;
     cachedStations = stations;
     cachedGraph = graph.buildGraph(connections);
 
-    const stationMap = new Map(stations.map((s) => [s.id, s])); //per evitare il find O(n) dopo petr trovare l'id
+    const stationMap = new Map(stations.map((s) => [s.id, s])); //per evitare il find O(n) dopo per trovare l'id
 
     const pairs = [];
     for (const station of stations) {
@@ -125,12 +124,12 @@ app.get("/api/sessions/current", (req, res) => {
 
 //network
 app.get("/api/network", isLoggedIn, async (req, res) => {
-  if (!cachedStations || !cachedConnections) {
+  if (!cachedConnections) {
     return res.status(500).json({ error: "Cannot load network" });
   }
   res.json({
-    stations: cachedStations, //TODO per chè gli passo anceh le stations
     connections: cachedConnections.map((c) => ({
+      //tolgo le linee
       id: c.id,
       stationAId: c.stationAId,
       stationAName: c.stationAName,
@@ -164,21 +163,54 @@ app.post("/api/games", isLoggedIn, async (req, res) => {
     const [s, e] =
       cachedValidPairs[Math.floor(Math.random() * cachedValidPairs.length)];
     const [start, end] = Math.random() < 0.5 ? [s, e] : [e, s]; //randomizzare l'ordine di start e end
+    const time = dayjs().format("YYYY-MM-DD HH:mm:ss");
     const gameId = await gameDAO.createGame(
       req.user.id,
       start.id,
       end.id,
-      dayjs().format("YYYY-MM-DD HH:mm:ss"),
+      time,
     );
     res.status(201).json({
       id: gameId,
       startStation: { id: start.id, name: start.name },
       endStation: { id: end.id, name: end.name },
+      playedAt: time,
     });
   } catch {
     res.status(500).json({ error: "Cannot create game" });
   }
 });
+
+app.get(
+  "/api/games/:id",
+  isLoggedIn,
+  [
+    param("id")
+      .isInt({ min: 1 })
+      .withMessage("Game id must be a positive integer"),
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ error: "Invalid data" });
+    }
+
+    try {
+      const game = await gameDAO.getGame(Number(req.params.id), req.user.id);
+      if (!game) return res.status(404).json({ error: "Game not found" });
+
+      res.json({
+        id: game.id,
+        startStation: { id: game.startStationId, name: game.startStationName },
+        endStation: { id: game.endStationId, name: game.endStationName },
+        finalScore: game.finalScore,
+        playedAt: game.playedAt.format("YYYY-MM-DD HH:mm:ss"),
+      });
+    } catch {
+      res.status(500).json({ error: "Cannot load game" });
+    }
+  },
+);
 
 app.post(
   "/api/games/:id/route",
@@ -210,16 +242,34 @@ app.post(
       if (game.finalScore !== null)
         return res.status(409).json({ error: "Game already finalized" });
 
-      if (connectionIds.length < 3) {
-        await gameDAO.finalizeGame(gameId, req.user.id, 0);
-        return res.json({ valid: false, segments: [], finalScore: 0 });
-      }
-
       const PLANNING_DURATION_MS = 95 * 1000; //per tollerare ritardi nella rete
       const elapsed = dayjs().diff(game.playedAt);
+      console.log(
+        "elapsed ms:",
+        elapsed,
+        "| played_at:",
+        game.playedAt,
+        "| now:",
+        dayjs().format("YYYY-MM-DD HH:mm:ss"),
+      );
       if (elapsed > PLANNING_DURATION_MS) {
         await gameDAO.finalizeGame(gameId, req.user.id, 0);
-        return res.json({ valid: false, segments: [], finalScore: 0 });
+        return res.json({
+          valid: false,
+          reason: "time_expired",
+          segments: [],
+          finalScore: 0,
+        });
+      }
+
+      if (connectionIds.length < 3) {
+        await gameDAO.finalizeGame(gameId, req.user.id, 0);
+        return res.json({
+          valid: false,
+          reason: "too_short",
+          segments: [],
+          finalScore: 0,
+        });
       }
 
       const orderedPath = graph.validateOrderedPath(
@@ -231,7 +281,12 @@ app.post(
 
       if (!orderedPath) {
         await gameDAO.finalizeGame(gameId, req.user.id, 0);
-        return res.json({ valid: false, segments: [], finalScore: 0 });
+        return res.json({
+          valid: false,
+          reason: "invalid_path",
+          segments: [],
+          finalScore: 0,
+        });
       }
 
       const stationMap = new Map(cachedStations.map((s) => [s.id, s.name]));

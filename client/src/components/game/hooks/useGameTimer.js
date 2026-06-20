@@ -17,7 +17,7 @@ function useGameTimer(duration, playedAt) {
     };
 
     tick();
-
+    
     const id = setInterval(tick, 1000);
     return () => clearInterval(id);
   }, [playedAt, active]);

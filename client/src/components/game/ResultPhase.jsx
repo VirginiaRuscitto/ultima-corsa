@@ -99,8 +99,6 @@ function ResultPhase({ routeResult, onNewGame, onGoHome, gameData }) {
         : FAILURE_MESSAGES[routeResult.reason] ||
           "Il percorso inviato non è valido",
     });
-
-    return () => setMessage(null);
   }, [routeResult, setMessage]);
 
   return (
