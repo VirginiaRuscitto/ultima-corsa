@@ -188,7 +188,7 @@
 ## Use of AI Tools
 
 - Implementation of graph algorithms (chatgpt)
-- Creation of the custom useGameTimer hook (chatgpt)
+- Help in creation of custom useGameTimer hook (chatgpt)
 - Support for CSS layout and styling refinement (chatgpt)
 - Generation of subway route images (gemini)
 - Creation of text for the instruction page (chatgpt)

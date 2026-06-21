@@ -244,14 +244,6 @@ app.post(
 
       const PLANNING_DURATION_MS = 95 * 1000; //per tollerare ritardi nella rete
       const elapsed = dayjs().diff(game.playedAt);
-      console.log(
-        "elapsed ms:",
-        elapsed,
-        "| played_at:",
-        game.playedAt,
-        "| now:",
-        dayjs().format("YYYY-MM-DD HH:mm:ss"),
-      );
       if (elapsed > PLANNING_DURATION_MS) {
         await gameDAO.finalizeGame(gameId, req.user.id, 0);
         return res.json({

@@ -76,38 +76,13 @@ function App() {
       });
   }
 
-  if (initializing) {
-    return (
-      <MessageContext.Provider value={messageContextValue}>
-        <Routes>
-          <Route
-            element={
-              <DefaultLayout
-                loggedIn={false}
-                user={null}
-                handleLogout={() => {}}
-              />
-            }
-          >
-            <Route
-              index
-              element={
-                <div
-                  className="d-flex justify-content-center align-items-center"
-                  style={{ marginTop: "20vh" }}
-                >
-                  <Spinner animation="border" />
-                </div>
-              }
-            />
-          </Route>
-        </Routes>
-      </MessageContext.Provider>
-    );
-  }
-
   return (
     <MessageContext.Provider value={messageContextValue}>
+    {initializing ? (
+      <div className="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center bg-white" style={{ zIndex: 9999 }}>
+        <Spinner animation="border" />
+      </div>
+    ) : (
       <Routes>
         <Route
           element={
@@ -166,6 +141,7 @@ function App() {
           <Route path="*" element={<NotFoundPage />} />
         </Route>
       </Routes>
+    )}
     </MessageContext.Provider>
   );
 }
