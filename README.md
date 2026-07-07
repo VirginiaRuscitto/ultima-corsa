@@ -1,6 +1,6 @@
 # Exam #1: "Ultima corsa"
 
-Ultima Corsa is a single-player, time-pressured route-planning game set on a fictional metro network. Players race against a 90-second planning timer to chain together valid legs from a randomly assigned start to a destination station, collecting or losing coins along the way from random in-transit events.
+Full-stack web app for Ultima Corsa, a single-player, time-pressured route-planning game set on a fictional metro network. Players race against a 90-second planning timer to chain together valid legs from a randomly assigned start to a destination station, collecting or losing coins along the way from random in-transit events.
 
 
 For this project, I reimagined the original concept by setting the game in **Ancient Rome**, replacing the metro network with locations inspired by the Roman world and introducing Roman-themed random events, while preserving the original gameplay mechanics and objectives.
