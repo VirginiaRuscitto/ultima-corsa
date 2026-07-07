@@ -1,8 +1,18 @@
-[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/iZes9Qfg)
-
 # Exam #1: "Ultima corsa"
 
-## Student: s353342 RUSCITTO VIRGINIA
+Ultima Corsa is a single-player, time-pressured route-planning game set on a fictional metro network. Players race against a 90-second planning timer to chain together valid legs from a randomly assigned start to a destination station, collecting or losing coins along the way from random in-transit events.
+
+
+For this project, I reimagined the original concept by setting the game in **Ancient Rome**, replacing the metro network with locations inspired by the Roman world and introducing Roman-themed random events, while preserving the original gameplay mechanics and objectives.
+
+## Tech Stack
+
+| Layer | Technology |
+|--------|------------|
+| Backend | Node.js, Express, Passport.js |
+| Database | SQLite |
+| Frontend | React, CSS |
+| Other | Session-based authentication (hashed + salted credentials), CORS ("two servers" pattern)|
 
 ## React Client Application Routes
 
@@ -37,7 +47,7 @@
               "stationAName": "Roma",
               "stationBId": 2,
               "stationBName": "Capua"
-            };
+            }
             {
               "id": 2,
               "stationAId": 2,
